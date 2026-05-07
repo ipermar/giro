@@ -7,7 +7,7 @@ import asyncio
 
 
 anio=2026
-URL = f"https://www.procyclingstats.com/race/giro-d-italia/{anio}}/startlist"
+URL = f"https://www.procyclingstats.com/race/giro-d-italia/{anio}/startlist"
 
 
 def _parse_startlist(soup) -> pd.DataFrame:
