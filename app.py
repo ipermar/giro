@@ -1,79 +1,125 @@
 import dash
-
-
 from dash import dcc, html, Input, Output, dash_table
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 
 # ─────────────────────────────────────────
+# CONFIGURACIONES
+# ─────────────────────────────────────────
+
+COLORES = {
+    "Meji":  "#D85A30",
+    "Txato":  "#1D9E75",
+    "Turko": "#378ADD",
+    "Iñigo":  "#993556",
+    "Txikito":   "#BA7517",
+    "Tuflo": "#3b3b3b",
+    "Gordo": "#b3b3b3",
+    "Lozanías": "#dddddd",
+    "Txaki":"#cccccc",
+    "Triki": "#888888", 
+     "Pulido": "#444444"
+
+}
+
+FONDO   = "#ffffff"#0d1117"
+CARD_BG = "#F4F5F6"#161b22"
+BORDE   = "#F4F5F6"#30363d"
+TEXTO   = "#ff286e"#e6edf3"
+MUTED   = "#8b949e"
+ROSA    = "#ff286e"
+
+
+
+# ─────────────────────────────────────────
 # DATOS
 # ─────────────────────────────────────────
 
-jugadores = ["Marco", "Sofia", "Carlos", "Elena", "Javi"]
+jugadores= [
+"Gordo","Lozanías","Txaki","Triki", "Txikito","Txato","Meji","Turko","Pulido","Iñigo","Tuflo"
+]
 
-corredores = pd.DataFrame([
-    {"nombre": "Tadej Pogacar",    "equipo": "UAE Team Emirates",  "pais": "SVN", "jugador": "Marco",  "estado": "activo"},
-    {"nombre": "Geraint Thomas",   "equipo": "INEOS Grenadiers",   "pais": "GBR", "jugador": "Sofia",  "estado": "activo"},
-    {"nombre": "Jonathan Milan",   "equipo": "Lidl-Trek",          "pais": "ITA", "jugador": "Carlos", "estado": "activo"},
-    {"nombre": "Ben O'Connor",     "equipo": "Decathlon AG2R",     "pais": "AUS", "jugador": "Marco",  "estado": "activo"},
-    {"nombre": "Filippo Ganna",    "equipo": "INEOS Grenadiers",   "pais": "ITA", "jugador": "Elena",  "estado": "activo"},
-    {"nombre": "Tim Merlier",      "equipo": "Soudal Quick-Step",  "pais": "BEL", "jugador": "Javi",   "estado": "activo"},
-    {"nombre": "Andrea Vendrame",  "equipo": "Decathlon AG2R",     "pais": "ITA", "jugador": "Sofia",  "estado": "activo"},
-    {"nombre": "Einer Rubio",      "equipo": "Movistar",           "pais": "COL", "jugador": "Carlos", "estado": "activo"},
-    {"nombre": "Koen Bouwman",     "equipo": "Visma-LAB",          "pais": "NED", "jugador": "Elena",  "estado": "activo"},
-    {"nombre": "Jai Hindley",      "equipo": "BORA-hansgrohe",     "pais": "AUS", "jugador": "Javi",   "estado": "activo"},
-    {"nombre": "Magnus Cort",      "equipo": "Uno-X",              "pais": "DEN", "jugador": "Marco",  "estado": "activo"},
-    {"nombre": "Filippo Zana",     "equipo": "Jayco AlUla",        "pais": "ITA", "jugador": "Elena",  "estado": "activo"},
-    {"nombre": "Vincenzo Nibali",  "equipo": "Astana",             "pais": "ITA", "jugador": "Sofia",  "estado": "retirado"},
-    {"nombre": "Mikel Landa",      "equipo": "Soudal Quick-Step",  "pais": "ESP", "jugador": "Carlos", "estado": "retirado"},
-    {"nombre": "Romain Bardet",    "equipo": "dsm-firmenich",      "pais": "FRA", "jugador": "Elena",  "estado": "retirado"},
-    {"nombre": "Tom Pidcock",      "equipo": "INEOS Grenadiers",   "pais": "GBR", "jugador": "Javi",   "estado": "retirado"},
-])
+excel_corredores="./data/startlist_giro_2026.xlsx"
+corredores = pd.read_excel(excel_corredores, index_col=0)
+
+equipos = [
+{'id': 1, 'nombre': 'Alpecin-Premier Tech',  'jugador':'Gordo'},
+{'id': 11, 'nombre': 'Bahrain Victorious',  'jugador':'Triki'},
+{'id': 21, 'nombre': 'Bardiani-CSF 7 Saber',  'jugador':'Lozanías'},
+{'id': 31, 'nombre': 'Decathlon CMA CGM Team',  'jugador':'Txaki'},
+{'id': 41, 'nombre': 'EF Education-EasyPost',  'jugador':'Iñigo'},
+{'id': 51, 'nombre': 'Groupama-FDJ United',  'jugador':'Iñigo'},
+{'id': 61, 'nombre': 'Lidl-Trek',  'jugador':'Txikito'},
+{'id': 71, 'nombre': 'Lotto-Intermarché',  'jugador':'Txaki'},
+{'id': 81, 'nombre': 'Movistar Team',  'jugador':'Turko'},
+{'id': 91, 'nombre': 'INEOS Grenadiers',  'jugador':'Meji'},
+{'id': 101, 'nombre': 'NSN Cycling Team',  'jugador':'Pulido'},
+{'id': 111, 'nombre': 'Pinarello-Q36.5 Pro Cycling Team',  'jugador':'Pulido'},
+{'id': 121, 'nombre': 'Red Bull-BORA-hansgrohe',  'jugador':'Lozanías'},
+{'id': 131, 'nombre': 'Soudal Quick-Step',  'jugador':'Txato'},
+{'id': 141, 'nombre': 'Team Jayco-AlUla',  'jugador':'Lozanías'},
+{'id': 151, 'nombre': 'Team Picnic PostNL',  'jugador':'Txato'},
+{'id': 161, 'nombre': 'Team Polti VisitMalta',  'jugador':'Tuflo'},
+{'id': 171, 'nombre': 'Team Visma | Lease a Bike',  'jugador':'Triki'},
+{'id': 181, 'nombre': 'Tudor Pro Cycling Team',  'jugador':'Turko'},
+{'id': 191, 'nombre': 'UAE Team Emirates-XRG',  'jugador':'Meji'},
+{'id': 201, 'nombre': 'Unibet Rose Rockets',  'jugador':'Txikito'},
+{'id': 211, 'nombre': 'Uno-X Mobility',  'jugador':'Gordo'},
+{'id': 221, 'nombre': 'XDS Astana Team',  'jugador':'Tuflo'},
+]
 
 etapas = [
-    {"num": 1,  "nombre": "Venecia → Trieste",       "tipo": "llana",        "podio": ["Tim Merlier", "Jonathan Milan", "Filippo Ganna"]},
-    {"num": 2,  "nombre": "Cesenatico → Bolonia",    "tipo": "media montaña","podio": ["Tadej Pogacar", "Geraint Thomas", "Einer Rubio"]},
-    {"num": 3,  "nombre": "Módena → Viadana",        "tipo": "llana",        "podio": ["Tim Merlier", "Jonathan Milan", "Andrea Vendrame"]},
-    {"num": 4,  "nombre": "Acqui Terme → Andora",    "tipo": "media montaña","podio": ["Ben O'Connor", "Andrea Vendrame", "Koen Bouwman"]},
-    {"num": 5,  "nombre": "Genova → Lucca",          "tipo": "llana",        "podio": ["Jonathan Milan", "Tim Merlier", "Filippo Ganna"]},
-    {"num": 6,  "nombre": "Viareggio → Rapolano",    "tipo": "media montaña","podio": ["Tadej Pogacar", "Ben O'Connor", "Geraint Thomas"]},
-    {"num": 7,  "nombre": "Foligno → Perugia",       "tipo": "montaña",      "podio": ["Tadej Pogacar", "Einer Rubio", "Jai Hindley"]},
-    {"num": 8,  "nombre": "Spoleto → Prati di Tivo", "tipo": "alta montaña", "podio": ["Ben O'Connor", "Tadej Pogacar", "Geraint Thomas"]},
+ {'num': 1, 'fecha': '08/05',  'nombre': 'Nesebăr - Burgas',  'km':'147 kms' ,    'tipo': 'llana',        'podio': ['BARTHE Cyril','BAX Sjoerd','LEMMEN Bart']},
+{'num': 2, 'fecha': '09/05',  'nombre': 'Burgas - Veliko Tarnovo',  'km':'221 kms' ,    'tipo': 'ondulada',        'podio': []},
+{'num': 3, 'fecha': '10/05',  'nombre': 'Plovdiv - Sofia',  'km':'175 kms' ,    'tipo': 'llana',        'podio': []},
+{'num': 4, 'fecha': '12/05',  'nombre': 'Catanzaro - Cosenza',  'km':'138 kms' ,    'tipo': 'ondulada',        'podio': []},
+{'num': 5, 'fecha': '13/05',  'nombre': 'Praia a Mare - Potenza',  'km':'203 kms' ,    'tipo': 'ondulada',        'podio': []},
+{'num': 6, 'fecha': '14/05',  'nombre': 'Paestum - Napels',  'km':'142 kms' ,    'tipo': 'llana',        'podio': []},
+{'num': 7, 'fecha': '15/05',  'nombre': 'Formia - Blockhaus',  'km':'244 kms' ,    'tipo': 'montaña',        'podio': []},
+{'num': 8, 'fecha': '16/05',  'nombre': 'Chieti - Fermo',  'km':'156 kms' ,    'tipo': 'ondulada',        'podio': []},
+{'num': 9, 'fecha': '17/05',  'nombre': 'Cervia - Corno alle Scale',  'km':'184 kms' ,    'tipo': 'montaña',        'podio': []},
+{'num': 10, 'fecha': '19/05',  'nombre': 'Viareggio - Massa',  'km':'42 kms' ,    'tipo': 'crono',        'podio': []},
+{'num': 11, 'fecha': '20/05',  'nombre': 'Porcari - Chiavari',  'km':'195 kms' ,    'tipo': 'ondulada',        'podio': []},
+{'num': 12, 'fecha': '21/05',  'nombre': 'Imperia - Novi Ligure',  'km':'175 kms' ,    'tipo': 'llana',        'podio': []},
+{'num': 13, 'fecha': '22/05',  'nombre': 'Alessandria - Verbania',  'km':'189 kms' ,    'tipo': 'ondulada',        'podio': []},
+{'num': 14, 'fecha': '23/05',  'nombre': 'Aosta - Pila',  'km':'133 kms' ,    'tipo': 'montaña',        'podio': []},
+{'num': 15, 'fecha': '24/05',  'nombre': 'Voghera - Milan',  'km':'157 kms' ,    'tipo': 'llana',        'podio': []},
+{'num': 16, 'fecha': '26/05',  'nombre': 'Bellinzona - Carì',  'km':'113 kms' ,    'tipo': 'montaña',        'podio': []},
+{'num': 17, 'fecha': '27/05',  'nombre': 'Cassana d`Adda - Andalo',  'km':'202 kms' ,    'tipo': 'ondulada',        'podio': []},
+{'num': 18, 'fecha': '28/05',  'nombre': 'Fai della Paganelle - Pieve di Soligo',  'km':'171 kms' ,    'tipo': 'ondulada',        'podio': []},
+{'num': 19, 'fecha': '29/05',  'nombre': 'Feltre - Piani di Pezzè',  'km':'151 kms' ,    'tipo': 'montaña',        'podio': []},
+{'num': 20, 'fecha': '30/05',  'nombre': 'Gemona del Friuli - Piancavallo',  'km':'200 kms' ,    'tipo': 'montaña',        'podio': []},
+{'num': 21, 'fecha': '31/05',  'nombre': 'Rome - Rome',  'km':'131 kms' ,    'tipo': 'llana',        'podio': []},
 ]
 
 general = pd.DataFrame([
-    {"pos": 1,  "corredor": "Tadej Pogacar",   "equipo": "UAE",    "dif": "Líder",    "jugador": "Marco"},
-    {"pos": 2,  "corredor": "Geraint Thomas",  "equipo": "INEOS",  "dif": "+26s",     "jugador": "Sofia"},
-    {"pos": 3,  "corredor": "Einer Rubio",     "equipo": "MOV",    "dif": "+1m 11s",  "jugador": "Carlos"},
-    {"pos": 4,  "corredor": "Ben O'Connor",    "equipo": "AG2R",   "dif": "+1m 29s",  "jugador": "Marco"},
-    {"pos": 5,  "corredor": "Jai Hindley",     "equipo": "BORA",   "dif": "+1m 42s",  "jugador": "Javi"},
-    {"pos": 6,  "corredor": "Koen Bouwman",    "equipo": "Visma",  "dif": "+2m 50s",  "jugador": "Elena"},
-    {"pos": 7,  "corredor": "Andrea Vendrame", "equipo": "AG2R",   "dif": "+3m 43s",  "jugador": "Sofia"},
-    {"pos": 8,  "corredor": "Magnus Cort",     "equipo": "Uno-X",  "dif": "+5m 00s",  "jugador": "Marco"},
-    {"pos": 9,  "corredor": "Jonathan Milan",  "equipo": "Trek",   "dif": "+6m 56s",  "jugador": "Carlos"},
-    {"pos": 10, "corredor": "Filippo Zana",    "equipo": "Jayco",  "dif": "+1h 4m",   "jugador": "Elena"},
+    {"pos": 1,  "corredor": "GROVES Kaden",   "equipo": "Alpecin-Premier Tech",    "dif": "Líder",    "jugador": "Meji"},
+    {"pos": 2,  "corredor": "BAYER Tobias",  "equipo": "Alpecin-Premier Tech",  "dif": "+26s",     "jugador": "Txato"},
+    {"pos": 3,  "corredor": "BUSATTO Francesco",     "equipo": "Alpecin-Premier Tech",    "dif": "+1m 11s",  "jugador": "Turko"},
+    {"pos": 4,  "corredor": "GEENS Jonas",    "equipo": "Alpecin-Premier Tech",   "dif": "+1m 29s",  "jugador": "Meji"},
+    {"pos": 5,  "corredor": "PLANCKAERT Edward",     "equipo": "Alpecin-Premier Tech",   "dif": "+1m 42s",  "jugador": "Iñigo"},
+    {"pos": 6,  "corredor": "PLOWRIGHT Jensen",    "equipo": "Alpecin-Premier Tech",  "dif": "+2m 50s",  "jugador": "Meji"},
+    {"pos": 7,  "corredor": "PRICE-PEJTERSEN Johan", "equipo": "Alpecin-Premier Tech",   "dif": "+3m 43s",  "jugador": "Turko"},
+    {"pos": 8,  "corredor": "VERGALLITO Luca",     "equipo": "Alpecin-Premier Tech",  "dif": "+5m 00s",  "jugador": "Tuflo"},
+    {"pos": 9,  "corredor": "BUITRAGO Santiago",  "equipo": "Bahrain Victorious",   "dif": "+6m 56s",  "jugador": "Tuflo"},
+    {"pos": 10, "corredor": "CARUSO Damiano",    "equipo": "Bahrain Victorious",  "dif": "+1h 4m",   "jugador": "Txikito"},
 ])
 
 maillots = {
-    "🟣 Rosa":        {"corredor": "Tadej Pogacar",   "detalle": "+26s sobre 2º"},
-    "🟢 Regularidad": {"corredor": "Jonathan Milan",  "detalle": "312 pts"},
-    "🔴 Montaña":     {"corredor": "Ben O'Connor",    "detalle": "78 pts"},
-    "🔵 Equipos":     {"corredor": "UAE Team Emirates","detalle": "3h 42m 08s"},
-    "⚫ Farolillo":   {"corredor": "Filippo Zana",    "detalle": "+1h 04m"},
+    "🟣 Rosa":        {"corredor": "GROVES Kaden",   "detalle": "+26s sobre 2º"},
+    "🟢 Regularidad": {"corredor": "BAYER Tobias",  "detalle": "312 pts"},
+    "🔴 Montaña":     {"corredor": "BUSATTO Francesco",    "detalle": "78 pts"},
+    "🔵 Equipos":     {"corredor": "Alpecin-Premier Tech","detalle": "3h 42m 08s"},
+    "⚫ Farolillo":   {"corredor": "HARPER Chris",    "detalle": "+1h 04m"},
 }
 
 puntos_etapa  = {1: 10, 2: 6, 3: 4}
 puntos_general = {1: 15, 2: 10, 3: 7, 4: 5, 5: 4, 6: 3, 7: 2, 8: 2, 9: 1, 10: 1}
-puntos_maillots_jugador = {"Marco": 20+8, "Carlos": 8, "Elena": 8+5}  # rosa+mont / regular / equip+farol
 
-COLORES = {
-    "Marco":  "#D85A30",
-    "Sofia":  "#1D9E75",
-    "Carlos": "#378ADD",
-    "Elena":  "#993556",
-    "Javi":   "#BA7517",
-}
+puntos_maillots_jugador = {"Meji": 20, "Txato": 8, "Turko": 8, "Txikito":8 , "Iñigo":5}  # rosa: 20 / mon: 8 / regular 8  / equip 8 /farol 5
+
+
 
 # ─────────────────────────────────────────
 # LÓGICA DE PUNTOS
@@ -99,16 +145,8 @@ ranking = pd.DataFrame([
 # APP
 # ─────────────────────────────────────────
 
-app = dash.Dash(__name__, title="Txikigiro de Italia 🚴")
+app = dash.Dash(__name__, title="Quiniela Giro de Italia 🚴")
 
-server = app.server  # 🔴 obligatorio para Render
-
-FONDO   = "#0d1117"
-CARD_BG = "#161b22"
-BORDE   = "#30363d"
-TEXTO   = "#e6edf3"
-MUTED   = "#8b949e"
-ROSA    = "#E91E8C"
 
 def card(children, extra_style=None):
     style = {
@@ -194,11 +232,13 @@ def render_tab(tab):
             height=280, showlegend=False,
         )
         medallas = ["🥇", "🥈", "🥉", "", ""]
+        
         tabla = html.Table([
             html.Thead(html.Tr([html.Th(c) for c in ["#", "Jugador", "Pts etapas", "Bonus", "Total"]], style={"color": MUTED, "fontSize": "12px"})),
             html.Tbody([
                 html.Tr([
-                    html.Td(f"{medallas[i]} {i+1}"),
+                     
+                    html.Td({1:"🥇", 2:"🥈", 3:"🥉"}.get(i+1, str(i+1))),
                     html.Td(row["jugador"], style={"fontWeight": "600", "color": COLORES[row["jugador"]]}),
                     html.Td(puntos_de_jugador(row["jugador"]) - puntos_maillots_jugador.get(row["jugador"], 0)),
                     html.Td(puntos_maillots_jugador.get(row["jugador"], 0)),
@@ -275,7 +315,7 @@ def render_etapa(num):
     if num is None:
         return html.Div()
     e = next(et for et in etapas if et["num"] == num)
-    tipo_color = {"llana": "#1D9E75", "media montaña": "#378ADD", "montaña": "#BA7517", "alta montaña": "#D85A30"}
+    tipo_color = {"llana": "#1D9E75", "crono": "#378ADD", "ondulada": "#BA7517", "montaña": "#D85A30"}
     color = tipo_color.get(e["tipo"], MUTED)
     filas = []
     for i, corredor in enumerate(e["podio"], 1):
@@ -288,7 +328,14 @@ def render_etapa(num):
             html.Td(f"+{pts} pts", style={"color": "#3fb950", "fontWeight": "600"}),
         ], style={"borderBottom": f"1px solid {BORDE}", "fontSize": "14px", "padding": "10px 0"}))
     return html.Div([
+        
+        html.Span(e["fecha"], style={"background": color + "33", "color": color, "borderRadius": "6px",
+            "padding": "3px 10px", "fontSize": "12px", "fontWeight": "600", "marginBottom": "14px", "display": "inline-block"}),
+        html.Span("  "),
         html.Span(e["tipo"], style={"background": color + "33", "color": color, "borderRadius": "6px",
+            "padding": "3px 10px", "fontSize": "12px", "fontWeight": "600", "marginBottom": "14px", "display": "inline-block"}),
+        html.Span("  "),
+        html.Span(e["km"], style={"background": color + "33", "color": color, "borderRadius": "6px",
             "padding": "3px 10px", "fontSize": "12px", "fontWeight": "600", "marginBottom": "14px", "display": "inline-block"}),
         html.Table([
             html.Thead(html.Tr([html.Th(c) for c in ["Pos", "Corredor", "Jugador", "Puntos"]], style={"color": MUTED, "fontSize": "12px"})),
@@ -317,4 +364,4 @@ def render_corredores(filtro):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, suppress_callback_exceptions=True)
